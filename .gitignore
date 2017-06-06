@@ -3,7 +3,7 @@
 *.log
 *.[ao]
 *.pyc
-__pycache__/
 *.wav
 *.png
+__pycache__/
 /cuts*
