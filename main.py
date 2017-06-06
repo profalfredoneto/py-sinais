@@ -6,6 +6,7 @@ from scipy.fftpack import fft
 from scipy.io import wavfile
 import pylab as pl
 import numpy as np
+import sys
 
 
 song_name = "cocoon.mp3"
@@ -18,61 +19,87 @@ song.export(cut_name, format="wav")
 
 
 if __name__ == '__main__':
-    fs, data = wavfile.read('cocoon.wav')  # fs - sample frequency
+    song_name = sys.argv[1]
+    fs, data = wavfile.read(song_name)  # fs - sample frequency
     duration = len(data)/fs
 
-    track = [[], []]  # Dual channel
-    fourier = [[], []]  # Signal in frequency
-    time = [[], []]
-    freq = [[], []]
+    track = {'l':[], 'r':[]}  # Dual channel
+    fourier = {'l':[], 'r':[]}  # Signal in frequency
+    time = []
+    freq = []
 
 
-    for i in range(len(track)):
-        track[i] = data.T[i]
-        # this is 16-bit track, b is now normalized on [-1,1)
-        track[i] = np.divide(track[i], 2**16.)
-        #track[i] = [(x/2**16.) for x in track[i]]
-        time[i] = np.arange(0., float(len(track[i])), 1.0)/fs
-        # calculate fourier transform (complex numbers list)
-        fourier[i] = fft(track[i])
-        fourier[i] = np.absolute(fourier[i][:int(len(fourier[i])/2-1)])
+    track['l'] = data.T[0]
+    track['r'] = data.T[1]
+    # this is 16-bit track, b is now normalized on [-1,1)
+    track['l'] = np.divide(track['l'], 2**16.)
+    track['r'] = np.divide(track['r'], 2**16.)
+    #track[i] = [(x/2**16.) for x in track[i]]
+    time = np.arange(0., float(len(data)), 1.0)/fs
+    # calculate fourier transform (complex numbers list)
+    fourier['l'] = fft(track['l'])
+    fourier['l'] = np.absolute(fourier['l'][:int(len(fourier['l'])/2-1)])
+    fourier['r'] = fft(track['r'])
+    fourier['r'] = np.absolute(fourier['r'][:int(len(fourier['r'])/2-1)])
 
 
-        # Plot Amp/time  -------------------
+    # Plot Amp/time  -------------------
 
-        plt.figure(1, figsize=(18, 5))
-        plt.plot(time[i], track[i], linewidth=0.03, alpha=0.7, color=color[i])
-        plt.title('Amplitude X Time')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Amplitude')
-        plt.axis([0, duration, -1, 1])
-        plt.grid()
-        plt.show()
+    f, pltarr = plt.subplots(2, sharex=True, figsize=(16, 9))
+    pltarr[0].set_title('Left channel')
+    pltarr[0].plot(time, track['l'], linewidth=0.5, alpha=0.7, color='r')
+    pltarr[0].set_ylabel('Amplitude')
+    pltarr[0].axis([0, duration, -1, 1])
+    pltarr[0].grid()
 
+    pltarr[1].set_title('Right channel')
+    pltarr[1].plot(time, track['r'], linewidth=0.5, alpha=0.7, color='b')
+    pltarr[1].set_ylabel('Amplitude')
+    pltarr[1].axis([0, duration, -1, 1])
+    pltarr[1].grid()
 
-        # Plot dB/Hz  ------------------
-
-        plt.figure(2, figsize=(16, 5))
-        freq[i] = np.arange(0., len(fourier[i]), 1.0)/duration
-        plt.loglog(freq[i], fourier[i], basex=10, basey=10,
-                   linewidth=0.03, alpha=0.7, color=color[i])
-        plt.title('Power X Frequecy (loglog base 10)')
-        plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Intensity (dB)')
-        plt.axis([1, 22e3, 0, 10e5])
-        plt.grid()
-        plt.show()
+    plt.xlabel('Time (s)')
+    #plt.show()
+    print('Saving time-amp_' + song_name + '.png')
+    plt.savefig('/home/johannes/Documentos/py-sinais/time-amp_' + song_name + '.png', dpi = 200)
+    print('time-amp_' + song_name + '.png SAVED!')
 
 
-        # Plot Specgram  ----------------
+    # Plot dB/Hz  ------------------
 
-        #x = [y*len(data)*64 for y in track[i]]
-        plt.figure(3, figsize=(13, 6))
-        Pxx, freqs, bins, im = plt.specgram(np.absolute(track[i]), Fs=fs, NFFT=1024, cmap=plt.cm.gist_heat, mode='magnitude',
-                                            vmin=0, window=mlab.window_hanning, noverlap=900)
-        cbar = plt.colorbar(im)
-        plt.title('Audio Specgram Frequecy X Time X Intensity')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Frequency (Hz)')
-        cbar.set_label('Intensity (dB)')
-        plt.show()
+    freq = np.arange(0., len(fourier['l']), 1.0)/duration
+    f, pltarr = plt.subplots(2, sharex=True, figsize=(16, 9))
+    pltarr[0].set_title('Left channel')
+    pltarr[0].loglog(freq, fourier['l'], basex=10, basey=10, linewidth=0.5, alpha=0.7, color='r')
+    pltarr[0].set_ylabel('Power (dB)')
+    pltarr[0].axis([1, 22e3, -10e2, 10e4])
+    pltarr[0].grid()
+
+    pltarr[1].set_title('Right channel')
+    pltarr[1].loglog(freq, fourier['r'], basex=10, basey=10, linewidth=0.5, alpha=0.7, color='b')
+    pltarr[1].set_ylabel('Power (dB)')
+    pltarr[1].axis([1, 22e3, -10e2, 10e4])
+    pltarr[1].grid()
+
+    plt.xlabel('Frequency (Hz)')
+    #plt.show()
+    print('Saving freq-power_' + song_name + '.png')
+    plt.savefig('/home/johannes/Documentos/py-sinais/freq-power_' + song_name + '.png', dpi = 200)
+    print('freq-power_' + song_name + '.png SAVED!')
+
+
+    # Plot Specgram  ----------------
+
+    plt.figure(3, figsize=(13, 6))
+    Pxx, freqs, bins, im = plt.specgram(np.absolute(track['l']), Fs=fs, NFFT=2048, cmap=plt.cm.copper, mode='magnitude',
+                                        vmin=0, window=mlab.window_hanning, noverlap=900)
+    cbar = plt.colorbar(im)
+    plt.title('Audio Specgram Frequecy X Time X Intensity')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Frequency (Hz)')
+    cbar.set_label('Intensity (dB)')
+    plt.axis([0, duration, 0, 5000])
+    #plt.show()
+    print('Saving spec_' + song_name + '.png')
+    plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + '.png', dpi = 200)
+    print('spec_' + song_name + '.png SAVED!')
