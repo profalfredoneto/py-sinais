@@ -11,6 +11,12 @@ import sys
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
+        if len(sys.argv) < 2:
+            print('Too few arguments')
+        else:
+            print('Too many arguments')
+
+        print('>>> Use: python3 low-pass.py <song_name>\n')
         exit(-1)
 
 
@@ -55,6 +61,7 @@ if __name__ == '__main__':
     print('Saving spec_pre-lowpass_' + song_name + '.png')
     plt.savefig('/home/johannes/Documentos/py-sinais/spec_pre-lowpass_' + song_name + '.png', dpi = 200)
     print('spec_pre-lowpass_' + song_name + '.png SAVED!')
+    plt.close(1)
 
 
     # Spec plot lowpass  -------------
@@ -73,3 +80,4 @@ if __name__ == '__main__':
     print('Saving spec_lowpass_' + song_name + '.png')
     plt.savefig('/home/johannes/Documentos/py-sinais/spec_lowpass_' + song_name + '.png', dpi = 200)
     print('spec_lowpass_' + song_name + '.png SAVED!')
+    plt.close(2)

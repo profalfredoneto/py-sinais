@@ -11,7 +11,12 @@ import sys
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print('Too few arguments')
+        if len(sys.argv) < 2:
+            print('Too few arguments')
+        else:
+            print('Too many arguments')
+
+        print('>>> Use: python3 low-pass.py <song_name>\n')
         exit(-1)
 
 
@@ -87,9 +92,8 @@ if __name__ == '__main__':
 
 
     # Plot Specgram  ----------------
-    i = 3
     for channel in track:
-        plt.figure(i, figsize=(13, 6))
+        plt.figure(3, figsize=(13, 6))
         Pxx, freqs, bins, im = plt.specgram(np.absolute(track[channel]), Fs=fs, NFFT=2048, cmap=plt.get_cmap('CMRmap'),
                                             mode='magnitude', vmin=0, window=mlab.window_hanning, noverlap=900)
         cbar = plt.colorbar(im)
@@ -103,7 +107,7 @@ if __name__ == '__main__':
         print('Saving spec_' + song_name + '_' + str(channel) + '.png')
         plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + '_' + str(channel) + '.png', dpi = 200)
         print('spec_' + song_name + '_' + str(channel) + '.png SAVED!')
-        i += 1
+        plt.close(3)
 
 
     # Filtering the signal  ----------------
@@ -129,7 +133,7 @@ if __name__ == '__main__':
 
         wavfile.write('cuts/teste_' + str(c) + '.wav', rate=fs, data=cut_signal)
 
-        plt.figure(c, figsize=(13, 6))
+        plt.figure(4, figsize=(13, 6))
         Pxx, freqs, bins, im = plt.specgram(np.absolute(cut_signal), Fs=fs, NFFT=2048, cmap=plt.get_cmap('CMRmap'),
                                             mode='magnitude', vmin=0, window=mlab.window_hanning, noverlap=900)
         cbar = plt.colorbar(im)
@@ -143,3 +147,4 @@ if __name__ == '__main__':
         print('Saving spec_' + song_name + str(c) + '_filtered.png')
         plt.savefig('/home/johannes/Documentos/py-sinais/cuts/specs/spec_' + song_name + str(c) + '_filtered.png', dpi = 200)
         print('spec_' + song_name + str(c) + '_filtered.png SAVED!')
+        plt.close(4)
