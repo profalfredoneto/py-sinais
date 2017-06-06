@@ -2,21 +2,12 @@ from pydub import AudioSegment
 from pydub.playback import play
 from matplotlib import pyplot as plt
 from matplotlib import mlab
-from scipy.fftpack import fft
+from scipy.fftpack import fft, rfft, irfft, fftfreq
 from scipy.io import wavfile
 import pylab as pl
 import numpy as np
 import sys
 
-'''
-song_name = "cocoon.mp3"
-cut_name = song_name.split('.mp3')[0] + "-cut.wav"
-color = ['b', 'g', 'r']
-
-song = AudioSegment.from_mp3(song_name)
-song = song[:60e3:]
-song.export(cut_name, format="wav")
-'''
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -112,3 +103,52 @@ if __name__ == '__main__':
         plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + '_' + str(channel) + '.png', dpi = 200)
         print('spec_' + song_name + '_' + str(channel) + '.png SAVED!')
         i += 1
+
+
+    # Filtering the signal  ----------------
+
+    ##cuts = [20:5000:    ]
+
+    print('filtering the signal')
+
+    signal = track['l']
+
+    W = fftfreq(signal.size, d=1/fs)
+    f_signal = rfft(signal)
+
+    # If our original signal time was in seconds, this is now in Hz
+    cut_f_signal = f_signal.copy()
+    cut_f_signal[(W > 800)] = 0
+
+    cut_signal = irfft(cut_f_signal)
+
+    print('saving filtered signal')
+    wavfile.write('teste_.wav', rate=fs, data=cut_signal)
+
+    '''
+    for c in range(len(cuts)-1):
+        cut_f_signal = f_signal.copy()
+        cut_f_signal[(W<cuts[c])] = 0
+        cut_f_signal[(W>cuts[c+1])] = 0
+
+        cut_signal = irfft(cut_f_signal)
+
+        print('testing file')
+
+        wavfile.write('teste_' + str(c) + '.wav', rate=fs, data=cut_signal)
+
+        plt.figure(5, figsize=(13, 6))
+        Pxx, freqs, bins, im = plt.specgram(np.absolute(cut_signal), Fs=fs, NFFT=2048, cmap=plt.get_cmap('CMRmap'),
+                                            mode='magnitude', vmin=0, window=mlab.window_hanning, noverlap=900)
+        cbar = plt.colorbar(im)
+        plt.title('Audio Specgram of ' + song_name + str(c))
+        plt.xlabel('Time (s)')
+        plt.ylabel('Frequency (Hz)')
+        cbar.set_label('Intensity (dB)')
+        plt.axis([0, duration, 0, 5000])
+        #plt.show()
+
+        print('Saving spec_' + song_name + str(c) + '_filtered.png')
+        plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + str(c) + '_filtered.png', dpi = 200)
+        print('spec_' + song_name + str(c) + '_filtered.png SAVED!')
+    '''
