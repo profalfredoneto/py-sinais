@@ -9,6 +9,8 @@ O projeto é dividido em 3 scripsts em python 3:
 - main.py
 
 
+---
+
 Módulo convert-wav
 ------------------
 
@@ -18,6 +20,8 @@ Uso:
 
 >$ python3 convert-wav.py audio_em_mp3
 
+
+---
 
 Módulo low-pass
 ---------------
@@ -31,6 +35,8 @@ Uso:
 >$ python3 low-pass.py audio_em_wav
 
 
+---
+
 Módulo principal (main)
 -----------------------
 
@@ -43,7 +49,9 @@ Uso:
 >$ python3 main.py audio_em_wav
 
 
-REQUISITOS
+---
+
+Requisitos
 ----------
 
 - Python 3
