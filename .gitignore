@@ -6,4 +6,4 @@
 *.wav
 *.png
 __pycache__/
-/cuts*
+/cuts*/
