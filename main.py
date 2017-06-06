@@ -11,6 +11,7 @@ import sys
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
+        print('Too few arguments')
         exit(-1)
 
 
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     fourier['r'] = fft(track['r'])
     fourier['r'] = np.absolute(fourier['r'][:int(len(fourier['r'])/2-1)])
 
-    '''
+
     # Plot Amp/time  -------------------
 
     f, pltarr = plt.subplots(2, sharex=True, figsize=(13, 6))
@@ -103,7 +104,7 @@ if __name__ == '__main__':
         plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + '_' + str(channel) + '.png', dpi = 200)
         print('spec_' + song_name + '_' + str(channel) + '.png SAVED!')
         i += 1
-    '''
+
 
     # Filtering the signal  ----------------
 
@@ -115,18 +116,8 @@ if __name__ == '__main__':
 
     W = fftfreq(signal.size, d=1/fs)
     f_signal = rfft(signal)
-    '''
-    # If our original signal time was in seconds, this is now in Hz
-    cut_f_signal = f_signal.copy()
-    cut_f_signal[(W > 400)] = 0
-    #cut_f_signal[(W < 400)] = 0
 
-    cut_signal = irfft(cut_f_signal)
 
-    print('saving filtered signal')
-    wavfile.write('teste_.wav', rate=fs, data=cut_signal)
-
-    '''
     for c in range(len(cuts)-1):
         cut_f_signal = f_signal.copy()
         cut_f_signal[(W<cuts[c])] = 0
