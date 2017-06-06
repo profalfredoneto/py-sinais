@@ -37,7 +37,7 @@ if __name__ == '__main__':
     fourier['r'] = fft(track['r'])
     fourier['r'] = np.absolute(fourier['r'][:int(len(fourier['r'])/2-1)])
 
-
+    '''
     # Plot Amp/time  -------------------
 
     f, pltarr = plt.subplots(2, sharex=True, figsize=(13, 6))
@@ -103,11 +103,11 @@ if __name__ == '__main__':
         plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + '_' + str(channel) + '.png', dpi = 200)
         print('spec_' + song_name + '_' + str(channel) + '.png SAVED!')
         i += 1
-
+    '''
 
     # Filtering the signal  ----------------
 
-    ##cuts = [20:5000:    ]
+    cuts = np.arange(20, 5020, 200)
 
     print('filtering the signal')
 
@@ -115,10 +115,11 @@ if __name__ == '__main__':
 
     W = fftfreq(signal.size, d=1/fs)
     f_signal = rfft(signal)
-
+    '''
     # If our original signal time was in seconds, this is now in Hz
     cut_f_signal = f_signal.copy()
-    cut_f_signal[(W > 800)] = 0
+    cut_f_signal[(W > 400)] = 0
+    #cut_f_signal[(W < 400)] = 0
 
     cut_signal = irfft(cut_f_signal)
 
@@ -135,9 +136,9 @@ if __name__ == '__main__':
 
         print('testing file')
 
-        wavfile.write('teste_' + str(c) + '.wav', rate=fs, data=cut_signal)
+        wavfile.write('cuts/teste_' + str(c) + '.wav', rate=fs, data=cut_signal)
 
-        plt.figure(5, figsize=(13, 6))
+        plt.figure(c, figsize=(13, 6))
         Pxx, freqs, bins, im = plt.specgram(np.absolute(cut_signal), Fs=fs, NFFT=2048, cmap=plt.get_cmap('CMRmap'),
                                             mode='magnitude', vmin=0, window=mlab.window_hanning, noverlap=900)
         cbar = plt.colorbar(im)
@@ -149,6 +150,5 @@ if __name__ == '__main__':
         #plt.show()
 
         print('Saving spec_' + song_name + str(c) + '_filtered.png')
-        plt.savefig('/home/johannes/Documentos/py-sinais/spec_' + song_name + str(c) + '_filtered.png', dpi = 200)
+        plt.savefig('/home/johannes/Documentos/py-sinais/cuts/specs/spec_' + song_name + str(c) + '_filtered.png', dpi = 200)
         print('spec_' + song_name + str(c) + '_filtered.png SAVED!')
-    '''
