@@ -9,7 +9,7 @@ O projeto é dividido em 3 scripsts em python 3:
 - main.py
 
 
-MÓDULO CONVERT-WAV
+Módulo convert-wav
 ------------------
 
 É utilizado para converter arquivos _.mp3_ em _.wav_ para que possam ser analisados nos outros módulos.
@@ -19,7 +19,7 @@ Uso:
 >$ python3 convert-wav.py audio_em_mp3
 
 
-MÓDULO LOW-PASS
+Módulo low-pass
 ---------------
 
 Implementa um módulo de filtro passa-baixa, mas pode ser modificado para ser um passa-alta em parâmentros internos do código.
@@ -31,7 +31,7 @@ Uso:
 >$ python3 low-pass.py audio_em_wav
 
 
-MÓDULO PRINCIPAL (MAIN)
+Módulo principal (main)
 -----------------------
 
 Implementa as principais funcionalidades do módulo.
